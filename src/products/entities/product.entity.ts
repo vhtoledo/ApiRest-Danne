@@ -40,4 +40,28 @@ export class Product {
     @Column('text')
     types: string;
 
+
+
+    @BeforeInsert()
+    checkSlugInsert() {
+
+        if ( !this.slug ) {
+            this.slug = this.title;
+        }
+
+        this.slug = this.slug
+            .toLowerCase()
+            .replaceAll(' ','_')
+            .replaceAll("'",'')
+
+    }
+
+    @BeforeUpdate()
+    checkSlugUpdate() {
+        this.slug = this.slug
+            .toLowerCase()
+            .replaceAll(' ','_')
+            .replaceAll("'",'')
+    }
+
 }
