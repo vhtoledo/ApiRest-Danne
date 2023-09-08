@@ -40,7 +40,13 @@ export class Product {
     @Column('text')
     types: string;
 
+    @Column('text', {
+        array: true,
+        default: []
+    })
+    tags: string[];
 
+    // images
 
     @BeforeInsert()
     checkSlugInsert() {

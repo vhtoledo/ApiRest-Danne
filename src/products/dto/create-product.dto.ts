@@ -35,4 +35,8 @@ export class CreateProductDto {
     @IsIn(['tortas', 'tartas', 'alfajores', 'cafes'])
     types: string;
 
+    @IsString({ each: true })
+    @IsArray()
+    @IsOptional()
+    tags: string[];
 }
