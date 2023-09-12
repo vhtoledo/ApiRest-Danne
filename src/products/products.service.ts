@@ -44,14 +44,23 @@ export class ProductsService {
   }
 
   // Obtener todos los productos
-  findAll( paginationDto:PaginationDto ) {
+  async findAll( paginationDto:PaginationDto ) {
     const { limit = 10, offset = 0 } = paginationDto;
 
-    return this.productRepository.find({
+    const products = await this.productRepository.find({
       take: limit,
       skip: offset,
-      // TODO: relaciones
+      // Relaciones
+      relations: {
+        images: true,
+      }
     })
+
+    // Aplanar imagen
+    return products.map(product => ({
+      ...product,
+      images: product.images.map( img => img.url )
+    }))
   }
 
   // Obtener producto por id
@@ -63,13 +72,15 @@ export class ProductsService {
       product = await this.productRepository.findOneBy({ id: term });
     } else {
       // funcion que permite crear query
-      const queryBuilder = this.productRepository.createQueryBuilder();
+      const queryBuilder = this.productRepository.createQueryBuilder('prod');
       // buscar un producto por titulo o slug 
       product = await queryBuilder
         .where('UPPER(title) =:title or slug =:slug', {
           title: term.toUpperCase(),
           slug: term.toLowerCase(),
-        }).getOne();
+        })
+        .leftJoinAndSelect('prod.images', 'prodImages')
+        .getOne();
     }
 
 
@@ -77,6 +88,15 @@ export class ProductsService {
       throw new NotFoundException(`Product with ${ term } not found`);
 
     return product;
+  }
+
+  //Metodo para aplanar las imagenes
+  async findOnePlain( term: string ) {
+    const { images = [], ...rest } = await this.findOne ( term )
+    return {
+      ...rest,
+      images: images.map( image => image.url )
+    }
   }
 
   // Actualizar el producto
