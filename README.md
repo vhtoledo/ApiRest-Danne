@@ -11,8 +11,13 @@
 5. Levantar base de datos
 ```
 docker-compose up -d
+
+6. Ejecutar SEED
 ```
-6. Comando para levantar proyecto
+http://localhost:3000/api/seed
+```
+```
+7. Comando para levantar proyecto
 ```
 yarn start:dev 
 ```
