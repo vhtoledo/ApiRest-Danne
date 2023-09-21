@@ -5,8 +5,8 @@ import { Repository } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
 
-import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './entities/user.entity';
+import { LoginUserDto, CreateUserDto } from './dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 
@@ -20,58 +20,71 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+
+  async create( createUserDto: CreateUserDto) {
     
     try {
 
       const { password, ...userData } = createUserDto;
-
+      
       const user = this.userRepository.create({
-        ...userData, 
-        password: bcrypt.hashSync( password, 10)
+        ...userData,
+        password: bcrypt.hashSync( password, 10 )
       });
 
-      await this.userRepository.save( user );
+      await this.userRepository.save( user )
       delete user.password;
 
       return {
         ...user,
         token: this.getJwtToken({ id: user.id })
       };
-      
+      // TODO: Retornar el JWT de acceso
+
     } catch (error) {
       this.handleDBErrors(error);
     }
+
   }
 
-  async login( loginUserDto: LoginUserDto) {
+  async login( loginUserDto: LoginUserDto ) {
 
     const { password, email } = loginUserDto;
 
     const user = await this.userRepository.findOne({
-      where: {email},
-      select: { email: true, password: true, id: true }
+      where: { email },
+      select: { email: true, password: true, id: true } //! OJO!
     });
 
     if ( !user ) 
-      throw new UnauthorizedException('Credentials are not valird (email)');
-
+      throw new UnauthorizedException('Credentials are not valid (email)');
+      
     if ( !bcrypt.compareSync( password, user.password ) )
       throw new UnauthorizedException('Credentials are not valid (password)');
 
-      return {
-        ...user,
-        token: this.getJwtToken({ id: user.id })
-      };
+    return {
+      ...user,
+      token: this.getJwtToken({ id: user.id })
+    };
   }
 
+  async checkAuthStatus( user: User ){
+
+    return {
+      ...user,
+      token: this.getJwtToken({ id: user.id })
+    };
+
+  }
+
+
+  
   private getJwtToken( payload: JwtPayload ) {
 
     const token = this.jwtService.sign( payload );
     return token;
 
   }
-
 
   private handleDBErrors( error: any ): never {
 
@@ -84,4 +97,6 @@ export class AuthService {
     throw new InternalServerErrorException('Please check server logs');
 
   }
+
+
 }

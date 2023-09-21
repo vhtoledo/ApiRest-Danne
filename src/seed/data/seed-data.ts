@@ -1,3 +1,5 @@
+import * as bcrypt from 'bcrypt';
+
 interface SeedProduct {
     description: string;
     images: string[];
@@ -13,13 +15,34 @@ interface SeedProduct {
 type ValidSizes = '1kg'|'2kg'|'3kg'|'4kg'|'5kg'|'6kg'|'7kg'|'10cm';
 type ValidTypes = 'tortas'|'tartas'|'masas'|'cafe';
 
+interface SeedUser {
+    email:    string;
+    fullName: string;
+    password: string;
+    roles:     string[];
+}
 
 interface SeedData {
+    users: SeedUser[];
     products: SeedProduct[];
 }
 
 
 export const initialData: SeedData = {
+    users: [
+        {
+            email: 'test1@google.com',
+            fullName: 'Test One',
+            password: bcrypt.hashSync( 'Abc123', 10 ),
+            roles: ['admin']
+        },
+        {
+            email: 'test2@google.com',
+            fullName: 'Test Two',
+            password: bcrypt.hashSync( 'Abc123', 10 ),
+            roles: ['user','super']
+        }
+    ],
     products: [
         {
             description: "Torta matilda de chocolate dos rellenos.",
