@@ -17,6 +17,7 @@ export class ProductsService {
 
   constructor(
 
+    // Inyectamos nuestra entidad de producto
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
 
@@ -28,10 +29,11 @@ export class ProductsService {
   ) {}
 
 
-
+  // Metodo Insertar producto
   async create(createProductDto: CreateProductDto, user: User) {
     
     try {
+      // crea nuestra instancia del producto
       const { images = [], ...productDetails } = createProductDto;
 
       const product = this.productRepository.create({
@@ -40,6 +42,7 @@ export class ProductsService {
         user,
       });
       
+      // guardar en la base de datos
       await this.productRepository.save( product );
 
       return { ...product, images };
@@ -51,7 +54,7 @@ export class ProductsService {
 
   }
 
-
+  // Metodo obtener todos los productos 
   async findAll( paginationDto: PaginationDto ) {
 
     const { limit = 10, offset = 0 } = paginationDto;
@@ -70,6 +73,7 @@ export class ProductsService {
     }))
   }
 
+  // Metodo obtener producto por ID
   async findOne( term: string ) {
 
     let product: Product;
@@ -103,7 +107,7 @@ export class ProductsService {
   }
 
 
-
+  // Metodo actualizar producto por ID
   async update( id: string, updateProductDto: UpdateProductDto, user: User ) {
 
     const { images, ...toUpdate } = updateProductDto;
@@ -147,13 +151,14 @@ export class ProductsService {
 
   }
 
+  // Metodo eliminar producto por ID
   async remove(id: string) {
     const product = await this.findOne( id );
     await this.productRepository.remove( product );
     
   }
 
-
+  // Metodo para manejo de errores 
   private handleDBExceptions( error: any ) {
 
     if ( error.code === '23505' )
@@ -165,6 +170,7 @@ export class ProductsService {
 
   }
 
+  // Metodo eliminar todos los productos
   async deleteAllProducts() {
     const query = this.productRepository.createQueryBuilder('product');
 

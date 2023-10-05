@@ -11,6 +11,7 @@ export class ProductImage {
     @Column('text')
     url: string;
 
+    // muchos a uno
     @ManyToOne(
         () => Product,
         ( product ) => product.images,

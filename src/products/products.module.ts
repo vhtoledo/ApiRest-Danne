@@ -13,6 +13,7 @@ import { Product, ProductImage } from './entities';
   controllers: [ProductsController],
   providers: [ProductsService],
   imports: [
+    // modulos
     TypeOrmModule.forFeature([ Product, ProductImage]),
     AuthModule
   ],

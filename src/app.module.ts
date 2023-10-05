@@ -10,8 +10,10 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    // Implementar las variables de entorno
     ConfigModule.forRoot(),
 
+    // Conexion a la base de datos
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,

@@ -96,6 +96,7 @@ export class Product {
         example: 'tortahojaldre.jpg',
         description: 'Product images'
     })
+    // uno a muchos
     @OneToMany(
         () => ProductImage,
         (productImage) => productImage.product,
